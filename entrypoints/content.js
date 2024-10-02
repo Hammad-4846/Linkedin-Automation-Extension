@@ -1,20 +1,19 @@
 export default defineContentScript({
-  matches: ['https://www.linkedin.com/mynetwork/grow*'], // Use a wildcard to match all URLs that start with the specified path
+  matches: ['https://www.linkedin.com/mynetwork/grow*'],
   main() {
     console.log('Content script loaded.');
 
     // Listen for messages from the popup
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.action === "startAutomation") {
-        console.log("Request received.");
+        alert("Request received.");
         startAutomation(sendResponse);  // Pass sendResponse to startAutomation
         return true; // Keeps the message channel open for asynchronous response
       }
     });
 
-    // Function to check for connect buttons and start automation
-    const checkAndStartAutomation = (sendResponse) => {
-      console.log("Checking for connection buttons...");
+    const startAutomation = (sendResponse) => {
+      console.log("Starting LinkedIn automation...");
 
       // Immediately query for buttons 
       const connectButtons = document.querySelectorAll('button[aria-label^="Accept"]');
@@ -54,27 +53,5 @@ export default defineContentScript({
         }, 1000 * (index + 1)); // Add delay between each button click
       });
     };
-
-    // Set up a MutationObserver to listen for changes in the DOM
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach(mutation => {
-        if (mutation.type === "childList") {
-          const currentUrl = window.location.href;
-          // Check if the current URL matches your desired page
-          if (currentUrl.includes("linkedin.com/mynetwork/grow")) {
-            // Start your automation logic here if needed
-            console.log("Navigated to connections page.");
-            // Call the function to check and start automation
-            checkAndStartAutomation();
-          }
-        }
-      });
-    });
-
-    // Start observing the document body for changes
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Initial check for connect buttons when the content script is loaded
-    checkAndStartAutomation();
   },
 });
