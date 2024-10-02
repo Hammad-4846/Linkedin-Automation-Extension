@@ -6,7 +6,6 @@ export default defineContentScript({
     // Listen for messages from the popup
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       if (message.action === "startAutomation") {
-        alert("Request received.");
         startAutomation(sendResponse);  // Pass sendResponse to startAutomation
         return true; // Keeps the message channel open for asynchronous response
       }
